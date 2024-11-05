@@ -1,0 +1,42 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: prod-castillians-frontend-ingress
+  namespace: prod
+
+  annotations:
+     cert-manager.io/cluster-issuer: prod-letsencrypt
+
+
+spec:
+  #ingressClassName: traefik-internal
+  ingressClassName: nginx
+    
+  tls:
+    - hosts:
+        - www.castillians.com
+        - castillians.com
+      secretName: prod-k8s-www-tlsv1
+
+  rules:
+    - host: www.castillians.com
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name:  prod-castillians-frontend-svc
+                port:
+                  number: 80
+
+    - host: castillians.com
+      http:
+        paths:
+          - pathType: Prefix
+            path: "/"
+            backend:
+              service:
+                name:  prod-castillians-frontend-svc
+                port:
+                  number: 80
